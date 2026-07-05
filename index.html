@@ -16,7 +16,7 @@
 <!-- 👇 VUL IN: de volledige link waar de pagina straks staat -->
 <meta property="og:url" content="https://holly1991.github.io/voor-jou/">
 <!-- 👇 OPTIONEEL: absolute link naar een foto (bv. 1200×630 .jpg) voor in de preview; leeg = geen foto -->
-<meta property="og:image" content="">
+<meta property="og:image" content="https://holly1991.github.io/voor-jou/ons.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
 
@@ -367,14 +367,41 @@
   }
   .reasons-bonus.show { opacity: 1; transform: none; }
 
-  /* Photo */
+  /* Photo — ons gezin */
+  .photo-frame { max-width: 560px; margin: 0 auto; }
   .photo-wrap {
-    display: none; margin: 0 auto; width: min(240px, 70vw);
-    aspect-ratio: 1; border-radius: 50%; padding: 6px;
-    background: linear-gradient(135deg, var(--glow), var(--rose));
-    box-shadow: 0 16px 44px rgba(0,0,0,.4);
+    margin: 0 auto; padding: 8px; border-radius: 26px;
+    background: linear-gradient(135deg, var(--glow), var(--rose) 55%, var(--gold));
+    box-shadow: 0 18px 50px rgba(0,0,0,.45);
+    transform: rotate(-1.5deg);
+    transition: transform .45s cubic-bezier(.2,.8,.2,1);
   }
-  .photo-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+  .photo-wrap:hover { transform: rotate(0deg) scale(1.015); }
+  .photo-wrap img { width: 100%; border-radius: 20px; display: block; }
+  .photo-caption {
+    text-align: center; margin-top: 1.1rem;
+    font-family: var(--font-hand); font-size: clamp(1.5rem, 5.5vw, 2rem); color: var(--rose);
+  }
+  .mama-card {
+    margin: 2.4rem auto 0; max-width: 560px;
+    padding: 1.9rem 1.7rem; border-radius: 22px; text-align: center;
+    background: linear-gradient(160deg, rgba(233,184,114,.15), rgba(242,166,176,.07));
+    border: 1px solid rgba(233,184,114,.38);
+    box-shadow: 0 12px 34px rgba(0,0,0,.3), 0 0 30px rgba(233,184,114,.08);
+  }
+  .mama-card p {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(1.1rem, 4.2vw, 1.35rem);
+    line-height: 1.62; color: var(--cream);
+  }
+  .kids { display: flex; justify-content: center; gap: .6rem; flex-wrap: wrap; margin-top: 1.2rem; }
+  .kid {
+    padding: .32rem .9rem; border-radius: 999px;
+    border: 1px solid rgba(242,166,176,.42);
+    background: rgba(242,166,176,.1);
+    font-family: var(--font-hand); font-size: 1.3rem; line-height: 1.3; color: var(--rose);
+  }
+  .kid::before { content: "♥ "; font-size: .78em; color: var(--gold); }
 
   /* Gifts */
   .gift-intro {
@@ -513,7 +540,15 @@
     </div>
 
     <div class="block" id="photoBlock" style="display:none;">
-      <div class="photo-wrap reveal-up" id="photoWrap"><img id="photo" alt="Wij samen"></div>
+      <p class="section-label" id="photoLabel"></p>
+      <div class="photo-frame reveal-up">
+        <div class="photo-wrap" id="photoWrap"><img id="photo" alt="Ons gezin samen"></div>
+        <p class="photo-caption" id="photoCaption"></p>
+      </div>
+      <div class="mama-card reveal-up" id="mamaCard">
+        <p id="mamaTekst"></p>
+        <div class="kids" id="kids"></div>
+      </div>
     </div>
 
     <div class="block">
@@ -569,8 +604,12 @@ const CONFIG = {
   // Verschijnt pas als alle kaartjes zijn opengetikt
   redenenBonus: "…en nog duizend redenen meer ❤",
 
-  // Optioneel: link naar een foto (laat leeg "" om over te slaan)
-  fotoUrl: "",
+  // ---- Ons gezin (laat fotoUrl leeg "" om deze sectie over te slaan) ----
+  fotoUrl: "ons.jpg",
+  fotoTitel: "Ons gezinnetje",
+  fotoCaption: "Wij vijven, samen ❤",
+  mamaTekst: "En wat ben je een geweldige moeder. Joris, Benthe en Stan hebben de liefste, warmste en sterkste mama die er bestaat. Zoals jij er elke dag voor hen klaarstaat — dát is echte liefde.",
+  kinderen: ["Joris", "Benthe", "Stan"],
 
   // ---- Cadeau: zij mag kiezen ----
   cadeauTitel: "Jouw cadeau",
@@ -721,10 +760,20 @@ CONFIG.cadeaus.forEach(g => {
   giftsEl.appendChild(a);
 });
 
-/* photo (optional) */
+/* ons gezin (optioneel) */
 if (CONFIG.fotoUrl && CONFIG.fotoUrl.trim() !== "") {
   document.getElementById("photo").src = CONFIG.fotoUrl;
   document.getElementById("photoBlock").style.display = "block";
+  document.getElementById("photoLabel").textContent = CONFIG.fotoTitel || "";
+  document.getElementById("photoCaption").textContent = CONFIG.fotoCaption || "";
+  document.getElementById("mamaTekst").textContent = CONFIG.mamaTekst || "";
+  const kidsEl = document.getElementById("kids");
+  (CONFIG.kinderen || []).forEach(k => {
+    const s = document.createElement("span");
+    s.className = "kid";
+    s.textContent = k;
+    kidsEl.appendChild(s);
+  });
 }
 
 /* --- ambient sparks --- */
