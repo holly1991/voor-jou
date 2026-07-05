@@ -67,6 +67,11 @@
     background: var(--glow); opacity: 0; filter: blur(.3px);
     animation: drift linear infinite;
   }
+  .spark-heart {
+    background: none; filter: none; border-radius: 0;
+    width: auto !important; height: auto !important;
+    color: var(--rose); font-size: 13px; line-height: 1;
+  }
   @keyframes drift {
     0%   { transform: translateY(20px) scale(.6); opacity: 0; }
     15%  { opacity: .5; }
@@ -275,23 +280,92 @@
   }
   .message p:last-child { margin-bottom: 0; }
 
-  /* Reasons */
-  .reasons { display: grid; gap: 1rem; }
+  /* Reasons — tik-open kaartjes */
+  .reasons { display: grid; gap: 1rem; perspective: 1400px; }
   @media (min-width: 560px) { .reasons { grid-template-columns: 1fr 1fr; } }
   .reason {
-    position: relative; padding: 1.4rem 1.5rem; border-radius: 18px;
-    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-    border: 1px solid rgba(242,166,176,.18);
+    border: 0; background: none; padding: 0; cursor: pointer;
+    border-radius: 18px; font: inherit; color: inherit;
+    position: relative; outline: none; -webkit-tap-highlight-color: transparent;
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .reason:focus-visible .reason-front,
+  .reason:focus-visible .reason-back { border-color: rgba(242,166,176,.7); }
+  .reason-card {
+    display: grid; transform-style: preserve-3d;
+    transition: transform .75s cubic-bezier(.3,.7,.35,1);
+  }
+  .reason.open .reason-card { transform: rotateY(180deg); }
+  .reason-face {
+    grid-area: 1 / 1; min-height: 128px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.3rem 1.4rem;
+    border: 1px solid rgba(242,166,176,.22);
     box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    font-size: 1.06rem; line-height: 1.45; color: var(--cream);
-    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1),
-                border-color .3s ease, box-shadow .3s ease;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    transition: border-color .3s ease, box-shadow .3s ease;
   }
-  .reason:hover {
-    border-color: rgba(255,196,107,.5);
-    box-shadow: 0 14px 36px rgba(0,0,0,.3), 0 0 22px rgba(255,196,107,.15);
+  .reason-front {
+    position: relative;
+    flex-direction: column; gap: .5rem; overflow: hidden;
+    background: linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.02));
   }
-  .reason::before { content: "♥"; color: var(--rose); opacity: .8; margin-right: .5rem; font-size: .95em; }
+  .reason:not(.open):hover .reason-front {
+    border-color: rgba(255,196,107,.55);
+    box-shadow: 0 14px 36px rgba(0,0,0,.3), 0 0 24px rgba(255,196,107,.18);
+  }
+  .reason-front::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 45%;
+    background: linear-gradient(105deg, transparent, rgba(255,243,214,.13), transparent);
+    transform: skewX(-18deg); animation: shine 4.2s ease-in-out infinite;
+  }
+  @keyframes shine { 0%, 55% { left: -70%; } 90%, 100% { left: 130%; } }
+  .heart-seal {
+    font-size: 1.9rem; line-height: 1; color: var(--rose);
+    text-shadow: 0 0 18px rgba(242,166,176,.55);
+    animation: heartbeat 1.9s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    12% { transform: scale(1.2); }
+    24% { transform: scale(1); }
+    36% { transform: scale(1.12); }
+    48% { transform: scale(1); }
+  }
+  .reason-front .tap-hint {
+    font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .reason-front .num {
+    position: absolute; top: .55rem; right: .95rem;
+    font-family: var(--font-hand); font-size: 1.3rem; color: rgba(233,184,114,.8);
+  }
+  .reason-back {
+    transform: rotateY(180deg);
+    flex-direction: column; gap: .4rem; text-align: center;
+    background: linear-gradient(160deg, rgba(58,34,88,.7), rgba(26,16,48,.5));
+    border-color: rgba(255,196,107,.45);
+    box-shadow: 0 14px 36px rgba(0,0,0,.32), 0 0 26px rgba(255,196,107,.15);
+    font-size: 1.05rem; line-height: 1.5; color: var(--cream);
+  }
+  .reason-back::before { content: "♥"; color: var(--rose); font-size: .95rem; opacity: .9; }
+  .burst { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; z-index: 5; }
+  .burst span {
+    position: absolute; left: 0; top: 0; font-size: 1rem; color: var(--rose);
+    text-shadow: 0 0 10px rgba(242,166,176,.6);
+    animation: burstFly .9s ease-out forwards;
+  }
+  @keyframes burstFly {
+    0%   { transform: translate(-50%, -50%) scale(.4); opacity: 1; }
+    100% { transform: translate(calc(var(--dx) - 50%), calc(var(--dy) - 50%)) scale(1.2); opacity: 0; }
+  }
+  .reasons-bonus {
+    text-align: center; margin-top: 1.7rem;
+    font-family: var(--font-hand); font-size: clamp(1.5rem, 5.5vw, 2.1rem); color: var(--gold);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity .9s ease, transform .9s ease;
+  }
+  .reasons-bonus.show { opacity: 1; transform: none; }
 
   /* Photo */
   .photo-wrap {
@@ -332,7 +406,9 @@
     padding: 1.1rem; height: 210px;
   }
   .gift-media img { max-width: 100%; max-height: 100%; object-fit: contain;
-    filter: drop-shadow(0 8px 16px rgba(0,0,0,.25)); border-radius: 4px; }
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,.25)); border-radius: 4px;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+  .gift:hover .gift-media img { transform: scale(1.05) rotate(-1deg); }
   .gift-media.is-fallback { flex-direction: column; gap: .8rem; }
   .gift-ic { width: 72px; height: 72px; }
   .gift-fallback-label {
@@ -384,7 +460,7 @@
   #confetti { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .flame, .glow, .spark, .prompt .hint, .scroll-hint .chev { animation: none !important; }
+    .flame, .glow, .spark, .prompt .hint, .scroll-hint .chev, .reason-front::after, .heart-seal { animation: none !important; }
     * { scroll-behavior: auto !important; }
   }
 </style>
@@ -431,7 +507,9 @@
 
     <div class="block">
       <p class="section-label" id="reasonsLabel"></p>
+      <p class="gift-intro reveal-up" id="reasonsIntro"></p>
       <div class="reasons" id="reasons"></div>
+      <p class="reasons-bonus" id="reasonsBonus" aria-live="polite"></p>
     </div>
 
     <div class="block" id="photoBlock" style="display:none;">
@@ -477,14 +555,19 @@ const CONFIG = {
 
   // ---- Waarom je trots op haar bent ----
   trotsTitel: "Waarom ik trots op je ben",
+  trotsIntro: "Achter elk kaartje staat een reden. Tik ze maar open. ❤",
   redenen: [
     "Om hoe sterk je bent, ook als het tegenzit",
     "Omdat je nooit opgeeft — op ons niet, op jezelf niet",
     "Om je hart, dat altijd op de goede plek zit",
     "Voor alles wat je draagt zonder te klagen",
+    "Om je lach, die alles lichter maakt",
     "Omdat je me elke dag opnieuw trots maakt",
-    "Voor alles wat we samen nog gaan opbouwen"
+    "Voor alles wat we samen nog gaan opbouwen",
+    "Omdat echte liefde bestaat — jij bewijst het mij elke dag"
   ],
+  // Verschijnt pas als alle kaartjes zijn opengetikt
+  redenenBonus: "…en nog duizend redenen meer ❤",
 
   // Optioneel: link naar een foto (laat leeg "" om over te slaan)
   fotoUrl: "",
@@ -540,6 +623,7 @@ document.getElementById("nameHand").textContent  = ", " + CONFIG.naam;
 document.getElementById("sub").textContent       = CONFIG.sub;
 document.getElementById("messageLabel").textContent = CONFIG.boodschapTitel;
 document.getElementById("reasonsLabel").textContent = CONFIG.trotsTitel;
+document.getElementById("reasonsIntro").textContent = CONFIG.trotsIntro;
 document.getElementById("giftLabel").textContent    = CONFIG.cadeauTitel;
 document.getElementById("giftIntro").textContent    = CONFIG.cadeauIntro;
 document.getElementById("giftNote").textContent     = CONFIG.cadeauNote;
@@ -556,12 +640,50 @@ CONFIG.boodschap.forEach(par => {
   msgEl.appendChild(p);
 });
 
-/* reasons */
+/* reasons — tik-open kaartjes */
 const reasonsEl = document.getElementById("reasons");
-CONFIG.redenen.forEach(r => {
-  const d = document.createElement("div");
+let openedReasons = 0;
+CONFIG.redenen.forEach((r, i) => {
+  const d = document.createElement("button");
+  d.type = "button";
   d.className = "reason reveal-up";
-  d.textContent = r;
+  d.setAttribute("aria-label", "Kaartje " + (i + 1) + " — tik om te openen");
+  d.innerHTML =
+    '<div class="reason-card">' +
+      '<div class="reason-face reason-front">' +
+        '<span class="num">' + (i + 1) + '</span>' +
+        '<span class="heart-seal">♥</span>' +
+        '<span class="tap-hint">tik om te openen</span>' +
+      '</div>' +
+      '<div class="reason-face reason-back"><span class="txt"></span></div>' +
+    '</div>';
+  d.querySelector(".txt").textContent = r;
+  d.addEventListener("click", () => {
+    if (d.classList.contains("open")) return;
+    d.classList.add("open");
+    d.setAttribute("aria-label", r);
+    if (!prefersReduced) {
+      const b = document.createElement("div");
+      b.className = "burst";
+      for (let k = 0; k < 8; k++) {
+        const s = document.createElement("span");
+        const ang = (Math.PI * 2 / 8) * k + Math.random() * .6;
+        const dist = 48 + Math.random() * 30;
+        s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+        s.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+        s.textContent = "♥";
+        b.appendChild(s);
+      }
+      d.appendChild(b);
+      setTimeout(() => b.remove(), 1000);
+    }
+    openedReasons++;
+    if (openedReasons === CONFIG.redenen.length) {
+      const bonus = document.getElementById("reasonsBonus");
+      bonus.textContent = CONFIG.redenenBonus || "";
+      bonus.classList.add("show");
+    }
+  });
   reasonsEl.appendChild(d);
 });
 
@@ -612,6 +734,7 @@ if (CONFIG.fotoUrl && CONFIG.fotoUrl.trim() !== "") {
   for (let i=0;i<n;i++){
     const s = document.createElement("span");
     s.className = "spark";
+    if (i % 4 === 0){ s.classList.add("spark-heart"); s.textContent = "♥"; }
     const size = Math.random()*3 + 1.5;
     s.style.width = s.style.height = size + "px";
     s.style.left = Math.random()*100 + "vw";
